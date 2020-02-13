@@ -23,10 +23,7 @@ import android.view.KeyEvent
 import android.view.inputmethod.EditorInfo
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.AbstractSavedStateViewModelFactory
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.*
 import androidx.paging.LoadState
 import androidx.paging.LoadType
 import androidx.paging.PagingData
@@ -37,6 +34,7 @@ import com.android.example.paging.pagingwithnetwork.reddit.repository.NetworkSta
 import com.android.example.paging.pagingwithnetwork.reddit.repository.RedditPostRepository
 import kotlinx.android.synthetic.main.activity_reddit.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 /**

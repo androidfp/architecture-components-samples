@@ -19,6 +19,7 @@ package com.android.example.paging.pagingwithnetwork.reddit.repository.inDb
 import androidx.annotation.MainThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.switchMap
 import androidx.paging.PagingConfig
 import androidx.paging.PagingDataFlow
