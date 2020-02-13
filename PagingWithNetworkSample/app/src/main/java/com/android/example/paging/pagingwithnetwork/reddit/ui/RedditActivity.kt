@@ -23,9 +23,9 @@ import android.view.KeyEvent
 import android.view.inputmethod.EditorInfo
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.AbstractSavedStateViewModelFactory
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
 import androidx.paging.LoadType
@@ -37,9 +37,7 @@ import com.android.example.paging.pagingwithnetwork.reddit.repository.NetworkSta
 import com.android.example.paging.pagingwithnetwork.reddit.repository.RedditPostRepository
 import kotlinx.android.synthetic.main.activity_reddit.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 /**
  * A list activity that shows reddit posts in the given sub-reddit.
@@ -48,8 +46,6 @@ import kotlinx.coroutines.withContext
  */
 class RedditActivity : AppCompatActivity() {
     companion object {
-        const val KEY_SUBREDDIT = "subreddit"
-        const val DEFAULT_SUBREDDIT = "androiddev"
         const val KEY_REPOSITORY_TYPE = "repository_type"
         fun intentFor(context: Context, type: RedditPostRepository.Type): Intent {
             val intent = Intent(context, RedditActivity::class.java)
@@ -61,14 +57,18 @@ class RedditActivity : AppCompatActivity() {
     private var refreshListener: ((LoadType, LoadState) -> Unit)? = null
 
     private val model: SubRedditViewModel by viewModels {
-        object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        object : AbstractSavedStateViewModelFactory(this, null) {
+            override fun <T : ViewModel?> create(
+                    key: String,
+                    modelClass: Class<T>,
+                    handle: SavedStateHandle
+            ): T {
                 val repoTypeParam = intent.getIntExtra(KEY_REPOSITORY_TYPE, 0)
                 val repoType = RedditPostRepository.Type.values()[repoTypeParam]
                 val repo = ServiceLocator.instance(this@RedditActivity)
                         .getRepository(repoType)
                 @Suppress("UNCHECKED_CAST")
-                return SubRedditViewModel(repo) as T
+                return SubRedditViewModel(repo, handle) as T
             }
         }
     }
@@ -79,8 +79,6 @@ class RedditActivity : AppCompatActivity() {
         initAdapter()
         initSwipeToRefresh()
         initSearch()
-        val subreddit = savedInstanceState?.getString(KEY_SUBREDDIT) ?: DEFAULT_SUBREDDIT
-        model.showSubreddit(subreddit)
     }
 
     override fun onDestroy() {
@@ -126,11 +124,6 @@ class RedditActivity : AppCompatActivity() {
         swipe_refresh.setOnRefreshListener {
             (list.adapter as? PostsAdapter)?.refresh()
         }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString(KEY_SUBREDDIT, model.currentSubreddit())
     }
 
     private fun initSearch() {

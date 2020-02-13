@@ -35,8 +35,6 @@ public class ProductViewModel extends AndroidViewModel {
 
     private final LiveData<ProductEntity> mObservableProduct;
 
-    public ObservableField<ProductEntity> product = new ObservableField<>();
-
     private final int mProductId;
 
     private final LiveData<List<CommentEntity>> mObservableComments;
@@ -57,12 +55,8 @@ public class ProductViewModel extends AndroidViewModel {
         return mObservableComments;
     }
 
-    public LiveData<ProductEntity> getObservableProduct() {
+    public LiveData<ProductEntity> getProduct() {
         return mObservableProduct;
-    }
-
-    public void setProduct(ProductEntity product) {
-        this.product.set(product);
     }
 
     /**
@@ -86,9 +80,10 @@ public class ProductViewModel extends AndroidViewModel {
             mRepository = ((BasicApp) application).getRepository();
         }
 
+        @SuppressWarnings("unchecked")
         @Override
-        public <T extends ViewModel> T create(Class<T> modelClass) {
-            //noinspection unchecked
+        @NonNull
+        public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
             return (T) new ProductViewModel(mApplication, mRepository, mProductId);
         }
     }

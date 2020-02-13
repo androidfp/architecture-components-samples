@@ -27,9 +27,9 @@ import androidx.fragment.app.Fragment
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.IdlingResource
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
-import androidx.test.runner.AndroidJUnit4
 import com.android.example.github.testing.SingleFragmentActivity
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
@@ -154,19 +154,19 @@ class DataBindingIdlingResourceTest {
     }
 
     private fun isIdle(): Boolean {
-        val task = FutureTask<Boolean>({
+        val task = FutureTask<Boolean> {
             return@FutureTask idlingResource.isIdleNow
-        })
+        }
         InstrumentationRegistry.getInstrumentation().runOnMainSync(task)
         return task.get()
     }
 
     private fun registerIdleCallback(): IdlingResource.ResourceCallback {
-        val task = FutureTask<IdlingResource.ResourceCallback>({
+        val task = FutureTask<IdlingResource.ResourceCallback> {
             val callback = mock<IdlingResource.ResourceCallback>()
             idlingResource.registerIdleTransitionCallback(callback)
             return@FutureTask callback
-        })
+        }
         InstrumentationRegistry.getInstrumentation().runOnMainSync(task)
         return task.get()
     }
